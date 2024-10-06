@@ -18,7 +18,7 @@ namespace LifeProject
 
         public bool?[,] Field {  get { return field; } }
 
-        public GameEngine(int rows, int cols, int density)
+        public GameEngine(int rows, int cols, int density, bool spawnVirus)
         {
             this.rows = rows;
             this.columns = cols;
@@ -29,7 +29,7 @@ namespace LifeProject
                 for (int y = 0; y < rows; y++)
                 {
                     field[x, y] = random.Next(density) == 0;
-                    field[x, y] = random.Next(3000) == 0 ? null : field[x, y]; 
+                    if(spawnVirus) field[x, y] = random.Next(3000) == 0 ? null : field[x, y];
                 }
             }
         }

@@ -30,13 +30,15 @@ namespace LifeProject
             {
                 nudResolution.Enabled = false;
                 nudDensity.Enabled = false;
+                Virus.Enabled = false;
                 resolution = (int)nudResolution.Value;
 
                 engine = new GameEngine
                     (
                         rows: pictureBox1.Height / resolution,
                         cols: pictureBox1.Width / resolution,
-                        density: (int)nudDensity.Minimum + (int)nudDensity.Maximum - (int)nudDensity.Value
+                        density: (int)nudDensity.Minimum + (int)nudDensity.Maximum - (int)nudDensity.Value,
+                        spawnVirus: Virus.Checked
                     );
 
 
@@ -79,6 +81,7 @@ namespace LifeProject
                 timer1.Stop();
                 nudDensity.Enabled = true;
                 nudResolution.Enabled = true;
+                Virus.Enabled = true;
 
             }
         }

@@ -38,6 +38,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.Virus = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -58,6 +59,7 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.Virus);
             this.splitContainer1.Panel1.Controls.Add(this.buttonStop);
             this.splitContainer1.Panel1.Controls.Add(this.buttonStart);
             this.splitContainer1.Panel1.Controls.Add(this.nudDensity);
@@ -175,6 +177,17 @@
             this.timer1.Interval = 40;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
+            // Virus
+            // 
+            this.Virus.AutoSize = true;
+            this.Virus.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.Virus.Location = new System.Drawing.Point(21, 210);
+            this.Virus.Name = "Virus";
+            this.Virus.Size = new System.Drawing.Size(111, 20);
+            this.Virus.TabIndex = 7;
+            this.Virus.Text = "Spawn Virus";
+            this.Virus.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -206,6 +219,7 @@
         private System.Windows.Forms.Button buttonStop;
         private System.Windows.Forms.Button buttonStart;
         private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.CheckBox Virus;
     }
 }
 
