@@ -29,7 +29,7 @@ namespace LifeProject
                 for (int y = 0; y < rows; y++)
                 {
                     field[x, y] = random.Next(density) == 0;
-                    field[x, y] = random.Next(2500) == 0 ? null : field[x, y]; 
+                    field[x, y] = random.Next(3000) == 0 ? null : field[x, y]; 
                 }
             }
         }
@@ -75,10 +75,10 @@ namespace LifeProject
                     else if (hasLife == null)
                     {
                         if (neighboursCount > 3) newField[x, y] = false;
-                        else if (allNeighboursCount > 6 || allNeighboursCount < 3) newField[x, y] = false;
+                        else if (allNeighboursCount > 5 || allNeighboursCount < 3) newField[x, y] = false;
                     }
                     else if (hasLife == false && (currentCellHasInfectedNeighbour > allNeighboursCount)) newField[x,y] = null;
-                    else if (hasLife == false && allNeighboursCount == 3)
+                    else if (hasLife == false && currentCellHasInfectedNeighbour < 3 && allNeighboursCount == 3)
                     {
                         newField[x, y] = true;
                     }
