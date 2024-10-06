@@ -15,17 +15,9 @@ namespace LifeProject
     {
         private Graphics graphics;
         private int resolution;
-        private bool[,] field;
-        private int rows;
-        private int columns;
+        private GameEngine engine;
 
-        private int NeighbourCountMin = 2;
-        private int NeighbourCountMax = 3;
-
-        private int NeigbourRadius_X_Min = -1;
-        private int NeigbourRadius_X_Max = 1;
-        private int NeigbourRadius_Y_Min = -1;
-        private int NeigbourRadius_Y_Max = 1;
+        private string Text;
 
         public Form1()
         {
@@ -38,40 +30,48 @@ namespace LifeProject
             {
                 nudResolution.Enabled = false;
                 nudDensity.Enabled = false;
-                countMin.Enabled = false;
-                countMax.Enabled = false;
-                rad_X_Max.Enabled = false;
-                rad_X_Min.Enabled = false;
-                rad_Y_Max.Enabled = false;
-                rad_Y_Min.Enabled = false;
-                
                 resolution = (int)nudResolution.Value;
 
-                NeighbourCountMin = (int)countMin.Value;
-                NeighbourCountMax = (int)countMax.Value;
+                engine = new GameEngine
+                    (
+                        rows: pictureBox1.Height / resolution,
+                        cols: pictureBox1.Width / resolution,
+                        density: (int)nudDensity.Minimum + (int)nudDensity.Maximum - (int)nudDensity.Value
+                    );
 
-                NeigbourRadius_X_Min = -1 * (int)rad_X_Min.Value;
-                NeigbourRadius_X_Max = (int)rad_X_Max.Value;
-                NeigbourRadius_Y_Min = -1 * (int)rad_Y_Min.Value;
-                NeigbourRadius_Y_Max = (int)rad_Y_Max.Value;
 
-                rows = pictureBox1.Height / resolution;
-                columns = pictureBox1.Width / resolution;
-                field = new bool[columns, rows];
-
-                Random rnd = new Random();
-                for (int x = 0; x < columns; x++) 
-                {
-                    for (int y = 0; y < rows; y++) 
-                    {
-                        field[x, y] = rnd.Next((int)nudDensity.Value) == 0;
-                    }
-                }
+                Text = $"Generation: {engine.CurrentGeneration}";
                 pictureBox1.Image = new Bitmap(pictureBox1.Width, pictureBox1.Height);
                 graphics = Graphics.FromImage(pictureBox1.Image);
                 timer1.Start();
             }
         }
+        private void DrawNextGeneration()
+        {
+            graphics.Clear(Color.Gray);
+
+            var field = engine.Field;
+            
+            for(int x = 0; x < field.GetLength(0); x++)
+            {
+                for(int y = 0; y < field.GetLength(1); y++)
+                {
+                    if (field[x,y] == true)
+                    {
+                        graphics.FillRectangle(Brushes.DarkGray, x * resolution, y * resolution, resolution, resolution);
+                    }
+                    else if (field[x,y] == null)
+                    {
+                        graphics.FillRectangle(Brushes.Black, x * resolution, y * resolution, resolution, resolution);
+                    }
+                }
+            }
+
+            Text = $"Generation: {engine.CurrentGeneration}";
+            engine.NextGeneration();
+            pictureBox1.Refresh();
+        }
+
         private void StopGame()
         {
             if (timer1.Enabled)
@@ -79,71 +79,14 @@ namespace LifeProject
                 timer1.Stop();
                 nudDensity.Enabled = true;
                 nudResolution.Enabled = true;
-                countMax.Enabled = true;
-                countMin.Enabled = true;
-                rad_X_Max.Enabled = true;
-                rad_X_Min.Enabled = true;
-                rad_Y_Max.Enabled = true;
-                rad_Y_Min.Enabled = true;
+
             }
         }
-        private void NextGeneration()
-        {
-            graphics.Clear(Color.Gray);
-            var newField = new bool[columns, rows];
 
-            for(int x = 0; x < columns; x++)
-            {
-                for(int y = 0; y < rows; y++)
-                {
-                    var neighboursCount = CountNeighbours(x, y);
-                    var hasLife = field[x, y];
-
-                    if (!hasLife && neighboursCount == NeighbourCountMax)
-                    {
-                        newField[x, y] = true;
-                    }
-                    else if (hasLife && (neighboursCount < NeighbourCountMin || neighboursCount > NeighbourCountMax))
-                    {
-                        newField[x, y] = false;
-                    }
-                    else
-                    {
-                        newField[x, y] = field[x, y];
-                    }
-
-                    if (hasLife)
-                    {
-                        graphics.FillRectangle(Brushes.DarkGray, x * resolution, y * resolution, resolution, resolution);
-                    }
-                }
-            }
-            field = newField;
-            pictureBox1.Refresh();
-        }
-
-        private int CountNeighbours(int x, int y)
-        {
-            int count = 0;
-            for (int i = NeigbourRadius_X_Min; i < NeigbourRadius_X_Max+1; i++)
-            {
-                for (int j = NeigbourRadius_Y_Min; j < NeigbourRadius_Y_Max+1; j++)
-                {
-                    int col = (x + i + columns) % columns;
-                    int row = (y + j + rows) % rows;
-
-                    bool isSelfCheking = col == x && row == y;
-                    var hasLife = field[col, row];
-
-                    if (hasLife && !isSelfCheking) count++;
-                }
-            }
-            return count;
-        }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            NextGeneration();
+            DrawNextGeneration();
         }
 
         private void buttonStop_Click(object sender, EventArgs e)
@@ -157,6 +100,22 @@ namespace LifeProject
 
         }
 
+        private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (!timer1.Enabled) return;
 
+            if (e.Button == MouseButtons.Left)
+            {
+                var x = e.Location.X / resolution;
+                var y = e.Location.Y / resolution;
+                engine.AddCell(x, y);
+            }
+            if (e.Button == MouseButtons.Right)
+            {
+                var x = e.Location.X / resolution;
+                var y = e.Location.Y / resolution;
+                engine.InfectCell(x, y);
+            }
+        }
     }
 }
